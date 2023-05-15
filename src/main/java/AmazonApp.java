@@ -140,31 +140,30 @@ public class AmazonApp {
         /**
          * 保存数据为csv格式
          */
-        phoneProduct.write().format("csv").save(outputPath+"/phone.csv");
-        phoneFeedback.write().format("csv").save(outputPath+"/phone_feedback.csv");
+        phoneProduct.write().format("csv").save(outputPath + "/phone.csv");
+        phoneFeedback.write().format("csv").save(outputPath + "/phone_feedback.csv");
 
-        clothProduct.write().format("csv").save(outputPath+"/cloth.csv");
-        clothFeedback.write().format("csv").save(outputPath+"/cloth_feedback.csv");
+        clothProduct.write().format("csv").save(outputPath + "/cloth.csv");
+        clothFeedback.write().format("csv").save(outputPath + "/cloth_feedback.csv");
 
-        homeProduct.write().format("csv").save(outputPath+"/home.csv");
-        homeFeedback.write().format("csv").save(outputPath+"/home_feedback.csv");
+        homeProduct.write().format("csv").save(outputPath + "/home.csv");
+        homeFeedback.write().format("csv").save(outputPath + "/home_feedback.csv");
 
-        foodProduct.write().format("csv").save(outputPath+"/food.csv");
-        foodFeedback.write().format("csv").save(outputPath+"/food_feedback.csv");
+        foodProduct.write().format("csv").save(outputPath + "/food.csv");
+        foodFeedback.write().format("csv").save(outputPath + "/food_feedback.csv");
 
-        musicalProduct.write().format("csv").save(outputPath+"/musical.csv");
-        musicalFeedback.write().format("csv").save(outputPath+"/musical_feedback.csv");
+        musicalProduct.write().format("csv").save(outputPath + "/musical.csv");
+        musicalFeedback.write().format("csv").save(outputPath + "/musical_feedback.csv");
 
-        toolsProduct.write().format("csv").save(outputPath+"/tools.csv");
-        toolsFeedback.write().format("csv").save(outputPath+"/tools_feedback.csv");
+        toolsProduct.write().format("csv").save(outputPath + "/tools.csv");
+        toolsFeedback.write().format("csv").save(outputPath + "/tools_feedback.csv");
 
         /**
          * 记录生成数据的耗时和数量
          */
         long t2 = System.currentTimeMillis();
-        long cnt = 0;
-        cnt += phoneFeedback.count() + clothFeedback.count() + foodFeedback.count() +
+        long cnt = phoneFeedback.count() + clothFeedback.count() + foodFeedback.count() +
                 homeFeedback.count() + musicalFeedback.count() + toolsFeedback.count();
-        System.out.println(String.format("cost %d ms ,total record: %d",t2-t1,cnt));
+        System.out.println(String.format("cost %d ms ,total record: %d", t2 - t1, cnt));
     }
 }
