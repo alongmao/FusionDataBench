@@ -1,16 +1,10 @@
+package spark;
+
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.*;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.size;
 
 /**
  * @Description: TODO
@@ -19,9 +13,9 @@ import static org.apache.spark.sql.functions.size;
  * @Version 1.0
  */
 public class AmazonApp {
-    static final String metadataPath = "/Users/along/Desktop/AmazonDataset/metadata/data";
-    static final String reviewPath = "/Users/along/Desktop/AmazonDataset/review/data";
-    static final String outputPath = "/Users/along/Desktop/AmazonDataset/output";
+    static final String metadataPath = "/Users/along/Documents/dataset/AmazonDataset/metadata/data";
+    static final String reviewPath = "/Users/along/Documents/dataset/AmazonDataset/review/data";
+    static final String outputPath = "/Users/along/Documents/dataset/AmazonDataset/output";
 
     public static void main(String[] args) throws AnalysisException {
         long t1 = System.currentTimeMillis();
@@ -89,6 +83,9 @@ public class AmazonApp {
 //        reviewMusicalDf.show();
 //        metaToolsDf.show();
 //        reviewToolsDf.show();
+
+
+
 
         /**1. 创建表
          * 2. meta表与review表执行外连接
@@ -165,5 +162,9 @@ public class AmazonApp {
         long cnt = phoneFeedback.count() + clothFeedback.count() + foodFeedback.count() +
                 homeFeedback.count() + musicalFeedback.count() + toolsFeedback.count();
         System.out.println(String.format("cost %d ms ,total record: %d", t2 - t1, cnt));
+
+        /**
+         * 生成ldbc 数据集 $LDBC_HOME/tools/run.py -- --format csv --scale-factor 0.3 --mode raw --format-options timestampFormat=MM/dd/y\ HH:mm:ss,dateFormat=MM/dd/y
+         */
     }
 }
