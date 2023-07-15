@@ -2,8 +2,6 @@ package strategy;
 
 import entity.Product;
 
-import javax.xml.crypto.Data;
-
 /**
  * @Description: TODO
  * @Author: along
@@ -16,6 +14,7 @@ public class ProductSelectStrategy implements DataSelectStrategy {
 
     @Override
     public Product select() {
+
         return null;
     }
 }

@@ -2,7 +2,6 @@ package strategy;
 
 import entity.Face;
 import org.apache.log4j.Logger;
-import org.apache.spark.sql.catalyst.expressions.In;
 
 import java.io.File;
 import java.util.*;

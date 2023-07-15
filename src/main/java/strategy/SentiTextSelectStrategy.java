@@ -2,12 +2,7 @@ package strategy;
 
 import com.alibaba.fastjson2.JSONObject;
 import entity.SentimentText;
-import org.apache.arrow.flatbuf.Int;
 import org.apache.log4j.Logger;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.*;
 
 import java.io.*;
 import java.util.*;
