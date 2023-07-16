@@ -73,6 +73,8 @@ public abstract class GraphDB {
         };
     }
 
+    public abstract Iterator<PathTriple> relationships(NodeFilter startNodeFilter,NodeFilter endNodeFilter,RelationshipFilter relationshipFilter,int from,int to);
+
     /*following methods are related to write task*/
     public abstract void deleteNodes(List<Integer> nodeIds);
 
@@ -97,4 +99,6 @@ public abstract class GraphDB {
     public abstract List<Relationship> removeRelationshipsProperties(List<Integer> relationshipIds, List<String> keys);
 
     public abstract List<Relationship> removeRelationshipsType(List<Integer> relationshipIds, String typeName);
+
+    public abstract Iterator<Node> shortestPath(String startNodeInnerId,String endNodeInnerId,String relationshipType);
 }

@@ -64,10 +64,10 @@ public class Neo4jDB extends GraphDB {
             @Override
             public boolean hasNext() {
                 if (rs.hasNext()) {
-                    return rs.hasNext();
+                    return true;
                 }
-                session.close();
                 tx.close();
+                session.close();
                 return false;
             }
 
@@ -89,8 +89,7 @@ public class Neo4jDB extends GraphDB {
         Result rs = tx.run(String.format("match (n%s) return n", filterStr), nodeFilter.getProperties());
 //        List<String> intelPropertyKey = nodeFilter.getProperties().keySet().stream().filter(this::isIntelligentAttr).collect(Collectors.toList());
         return new Iterator<>() {
-//            boolean earlyStop = false;
-
+            //            boolean earlyStop = false;
             @Override
             public boolean hasNext() {
                 if (rs.hasNext()) {
@@ -105,7 +104,7 @@ public class Neo4jDB extends GraphDB {
             public Node next() {
                 long t1 = System.currentTimeMillis();
                 org.neo4j.driver.types.Node neo4jNode = rs.next().get("n").asNode();
-                logger.info("get neo4j node cost " + (System.currentTimeMillis() - t1) + "ms");
+                logger.info("nodes(nodeFilter) get neo4j node cost " + (System.currentTimeMillis() - t1) + "ms");
                 //TODO 统一非结构化属性过滤
 //                if (intelPropertyKey.contains("face") && neo4jNode.asMap().containsKey("face")) {
 //                    t1 = System.currentTimeMillis();
@@ -145,12 +144,12 @@ public class Neo4jDB extends GraphDB {
         return new Iterator() {
             @Override
             public boolean hasNext() {
-                if (!rs.hasNext()) {
-                    tx.close();
-                    session.close();
-                    return false;
+                if (rs.hasNext()) {
+                    return true;
                 }
-                return true;
+                tx.close();
+                session.close();
+                return false;
             }
 
             @Override
@@ -167,6 +166,11 @@ public class Neo4jDB extends GraphDB {
 
     @Override
     public Iterator<PathTriple> relationships(NodeFilter startNodeFilter, NodeFilter endNodeFilter, RelationshipFilter relationshipFilter) {
+        return relationships(startNodeFilter,endNodeFilter,relationshipFilter,1,1);
+    }
+
+    @Override
+    public Iterator<PathTriple> relationships(NodeFilter startNodeFilter, NodeFilter endNodeFilter, RelationshipFilter relationshipFilter, int from, int to) {
         String startNodeFilterStr = getNodeFilterStr(startNodeFilter);
         String endNodeFilterStr = getNodeFilterStr(endNodeFilter);
         String relFilterStr = getRelFilterStr(relationshipFilter);
@@ -185,7 +189,8 @@ public class Neo4jDB extends GraphDB {
             param.putAll(relationshipFilter.getProperties());
         }
 
-        Result rs = tx.run(String.format("match (n%s)-[r:%s]->(m%s) return n,r,m", startNodeFilterStr, relFilterStr, endNodeFilterStr), param);
+        String hop = from == to ? "from" : from + ".." + to;
+        Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) return n,r,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr), param);
         return new Iterator<>() {
             @Override
             public boolean hasNext() {
@@ -204,6 +209,38 @@ public class Neo4jDB extends GraphDB {
                 org.neo4j.driver.types.Node n = record.get("n").asNode();
                 org.neo4j.driver.types.Node m = record.get("m").asNode();
                 return new PathTriple(neo4jNode2Node(n), neo4jNode2Node(m), neo4jRel2Rel(neo4jRelationship), false);
+            }
+        };
+    }
+
+    @Override
+    public Iterator<Node> shortestPath(String startNodeInnerId, String endNodeInnerId, String relationshipType) {
+        // 定义Cypher查询
+
+        String cypherQuery = String.format("MATCH path=shortestPath((startNode)-[:%s*]-(endNode))\n" +
+                "WHERE id(startNode) = %s AND id(endNode) = %s\n" +
+                "UNWIND nodes(path) AS n\n" +
+                "RETURN n", relationshipType, startNodeInnerId, endNodeInnerId);
+
+        // 运行查询
+        Session session = driver.session();
+        Transaction tx = session.beginTransaction();
+        Result rs = tx.run(cypherQuery);
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                if (rs.hasNext()) {
+                    return true;
+                }
+                tx.close();
+                session.close();
+                return false;
+            }
+
+            @Override
+            public Node next() {
+                org.neo4j.driver.types.Node neo4jNode = rs.next().get("n").asNode();
+                return neo4jNode2Node(neo4jNode);
             }
         };
     }
@@ -267,7 +304,6 @@ public class Neo4jDB extends GraphDB {
     public List<Relationship> removeRelationshipsType(List<Integer> relationshipIds, String typeName) {
         return null;
     }
-
 
     protected Boolean isIntelligentAttr(String key) {
         return key.equals("face") || key.equals("content");

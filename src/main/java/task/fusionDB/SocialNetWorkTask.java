@@ -19,16 +19,22 @@ import java.util.stream.Collectors;
  * @Version 1.0
  */
 @Slf4j
-public class RunTask {
+public class SocialNetWorkTask {
 
     private GraphDB neo4jDb;
 
     private static final Double IMAGE_SIMILAR = 0.98;
 
-    public RunTask() {
+    public SocialNetWorkTask() {
         this.neo4jDb = new Neo4jDB();
     }
 
+    /**
+     * @desc return friends with certain name and photo
+     * person->friend(photo:face,name)
+     * @param firstName
+     * @param facePath
+     */
     public void t1(String firstName, String facePath) {
         long t1 = System.currentTimeMillis();
         NodeFilter nodeFilter = new NodeFilter();
@@ -39,6 +45,13 @@ public class RunTask {
         log.info("task 1 cost {} ms",(System.currentTimeMillis()-t1));
     }
 
+    /**
+     * @desc recent positive sentiment message from friends like
+     * person(photo:face)->friend(photo:face,name)-[r:like]>message(text:sentiment)
+     * @param personFace
+     * @param friendFace
+     * @param sentiment
+     */
     public void t2(String personFace, String friendFace, int sentiment) {
         long t1 = System.currentTimeMillis();
         //1.获取person
@@ -73,6 +86,14 @@ public class RunTask {
         log.info("task 2 cost {}ms", (System.currentTimeMillis() - t1));
     }
 
+
+    /**
+     * @desc Geolocation portrait Search
+     * person->friend(photo:face)->city
+     * @param personId
+     * @param friendFace
+     * @param cityId
+     */
     public void t3(String personId, String friendFace, String cityId) {
 
         long t1 = System.currentTimeMillis();
@@ -92,6 +113,12 @@ public class RunTask {
         System.out.println(result);
     }
 
+    /**
+     * @desc Count the number of specific sentiment message of friend
+     * person->friends->message(text:sentiment) friend,count(message)
+     * @param personId
+     * @param sentiment
+     */
     public void t4(String personId, int sentiment) {
         /*朋友最近喜欢的积极消息的数量*/
         long t1 = System.currentTimeMillis();
@@ -116,7 +143,7 @@ public class RunTask {
 
     /**
      * optimizer :1.早停  2. 批量提交文本  3. ANN相似向量搜索算法
-     *
+     * @desc Recent positive message by friends or friends of friends create
      * @param face
      * @param sentiment
      */
@@ -159,22 +186,36 @@ public class RunTask {
 
 
     /**
-     *
+     * 最短路径
      * @param personId
      * @param friendFacePath
      */
     public void t6(String personId,String friendFacePath){
+        long t1 = System.currentTimeMillis();
+        /*方法1：暴力*/
+        //1。获取所有的可能friends
+        NodeFilter nodeFilter = new NodeFilter();
+        nodeFilter.setLabels(List.of("Person"));
+        List<Node> nodes = CommonUtil.convertIterator2List(neo4jDb.nodes(nodeFilter), e -> AIService.similarity((String) e.property("face"), friendFacePath) > IMAGE_SIMILAR, 3);
 
+        log.info("find {} possible path",nodes.size());
+        for(int i=0;i<nodes.size();i++){
+            List<Node> nodePath = CommonUtil.convertIterator2List(neo4jDb.shortestPath(personId, String.valueOf(nodes.get(i).getId()), "KNOWS"), node -> node != null);
+            log.info("path {}/{} length:{}",i+1,nodes.size(),nodePath.size());
+        }
+        long t2 = System.currentTimeMillis();
+        log.info("task 6 cost {} ms",(t2-t1));
     }
 
 
     public static void main(String[] args) {
-        RunTask runTask = new RunTask();
-        runTask.t1("Miguel", "/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg");
-        runTask.t2("/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg", "/Users/along/Documents/dataset/FaceDataset/lfw/Queen_Elizabeth_II/Queen_Elizabeth_II_0009.jpg", 2);
-        runTask.t3("1711", "/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", "5805");
-        runTask.t4("1714",2);
-        runTask.t5("/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", 2);
+        SocialNetWorkTask socialNetWorkTask = new SocialNetWorkTask();
+//        socialNetWorkTask.t1("Miguel", "/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg");
+//        socialNetWorkTask.t2("/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg", "/Users/along/Documents/dataset/FaceDataset/lfw/Queen_Elizabeth_II/Queen_Elizabeth_II_0009.jpg", 2);
+//        socialNetWorkTask.t3("1711", "/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", "5805");
+//        socialNetWorkTask.t4("1714",2);
+//        socialNetWorkTask.t5("/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", 2);
+        socialNetWorkTask.t6("1709","/Users/along/Documents/dataset/FaceDataset/lfw/Hector_Grullon/Hector_Grullon_0001.jpg");
     }
 
 
