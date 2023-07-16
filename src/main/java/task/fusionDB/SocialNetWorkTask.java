@@ -270,6 +270,11 @@ public class SocialNetWorkTask {
         log.info("task 8 cost {} ms", (t2 - t1));
     }
 
+    public void t9(String messageId){
+        long t1 = System.currentTimeMillis();
+
+    }
+
 
     public static void main(String[] args) {
         SocialNetWorkTask socialNetWorkTask = new SocialNetWorkTask();

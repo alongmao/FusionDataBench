@@ -56,27 +56,7 @@ public class Neo4jDB extends GraphDB {
 
     @Override
     public Iterator<Node> nodes() {
-        return new Iterator<>() {
-            Session session = driver.session();
-            Transaction tx = session.beginTransaction();
-            Result rs = tx.run("match (n) return n");
-
-            @Override
-            public boolean hasNext() {
-                if (rs.hasNext()) {
-                    return true;
-                }
-                tx.close();
-                session.close();
-                return false;
-            }
-
-            @Override
-            public Node next() {
-                org.neo4j.driver.types.Node neo4jNode = rs.next().get("n").asNode();
-                return neo4jNode2Node(neo4jNode);
-            }
-        };
+        return nodes(null);
     }
 
 
