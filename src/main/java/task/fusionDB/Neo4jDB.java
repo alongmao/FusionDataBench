@@ -132,35 +132,7 @@ public class Neo4jDB extends GraphDB {
 
     @Override
     public Iterator<PathTriple> relationships(RelationshipFilter relationshipFilter) {
-        String type = relationshipFilter.getType();
-        if (type == null || type.length() == 0) {
-            return null;
-        }
-
-        String relFilterStr = getRelFilterStr(relationshipFilter);
-        Session session = driver.session();
-        Transaction tx = session.beginTransaction();
-        Result rs = tx.run(String.format("match (n)-[r:%s]->(m) return n,r,m", relFilterStr), relationshipFilter.getProperties());
-        return new Iterator() {
-            @Override
-            public boolean hasNext() {
-                if (rs.hasNext()) {
-                    return true;
-                }
-                tx.close();
-                session.close();
-                return false;
-            }
-
-            @Override
-            public PathTriple next() {
-                Record record = rs.next();
-                org.neo4j.driver.types.Relationship neo4jRelationship = record.get("r").asRelationship();
-                org.neo4j.driver.types.Node n = record.get("n").asNode();
-                org.neo4j.driver.types.Node m = record.get("m").asNode();
-                return new PathTriple(neo4jNode2Node(n), neo4jNode2Node(m), neo4jRel2Rel(neo4jRelationship), false);
-            }
-        };
+        return relationships(null,null,relationshipFilter,1,1);
     }
 
 
