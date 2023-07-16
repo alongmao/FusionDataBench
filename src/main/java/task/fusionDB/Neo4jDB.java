@@ -161,7 +161,7 @@ public class Neo4jDB extends GraphDB {
             param.putAll(relationshipFilter.getProperties());
         }
 
-        String hop = from == to ? "from" : from + ".." + to;
+        String hop = from == to ? String.valueOf(from) : from + ".." + to;
         Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) return n,r,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr), param);
         return new Iterator<>() {
             @Override
