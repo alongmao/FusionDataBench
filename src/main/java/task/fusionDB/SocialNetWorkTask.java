@@ -162,7 +162,7 @@ public class SocialNetWorkTask {
         Node person = nodeList.get(0);
         RelationshipFilter relationshipFilter = new RelationshipFilter();
         relationshipFilter.setType("KNOWS");
-        Iterator<PathTriple> pathTripleIterator = neo4jDb.relationships(relationshipFilter);
+        Iterator<PathTriple> pathTripleIterator = neo4jDb.relationships(null,null,relationshipFilter,1,2);
         Set<Node> friends = CommonUtil.convertIterator2List(pathTripleIterator, e -> e.getStartNode().getId().equals(person.getId())).stream().map(e -> e.getEndNode()).collect(Collectors.toSet());
 
         if (friends.size() == 0) {
