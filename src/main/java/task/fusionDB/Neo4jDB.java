@@ -162,7 +162,7 @@ public class Neo4jDB extends GraphDB {
         }
 
         String hop = from == to ? String.valueOf(from) : from + ".." + to;
-        Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) return n,r,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr), param);
+        Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) unwind(r) as rel with n,rel,m return n,rel,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr), param);
         return new Iterator<>() {
             @Override
             public boolean hasNext() {
@@ -177,7 +177,7 @@ public class Neo4jDB extends GraphDB {
             @Override
             public PathTriple next() {
                 Record record = rs.next();
-                org.neo4j.driver.types.Relationship neo4jRelationship = record.get("r").asRelationship();
+                org.neo4j.driver.types.Relationship neo4jRelationship = record.get("rel").asRelationship();
                 org.neo4j.driver.types.Node n = record.get("n").asNode();
                 org.neo4j.driver.types.Node m = record.get("m").asNode();
                 return new PathTriple(neo4jNode2Node(n), neo4jNode2Node(m), neo4jRel2Rel(neo4jRelationship), false);

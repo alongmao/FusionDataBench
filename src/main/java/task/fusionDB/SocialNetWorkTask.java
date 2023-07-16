@@ -9,6 +9,7 @@ import type.PathTriple;
 import util.CommonUtil;
 
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -240,9 +241,33 @@ public class SocialNetWorkTask {
             return;
         }
         Node city = pathTriples.get(0).getEndNode();
-        log.info("person{firstName:{},lastName:{},browser:{}},city{name:{}}", person.property("firstName"), person.property("lastName"), person.property("browserUsed"),city.property("name"));
+        log.info("person{firstName:{},lastName:{},browser:{}},city{name:{}}", person.property("firstName"), person.property("lastName"), person.property("browserUsed"), city.property("name"));
         long t2 = System.currentTimeMillis();
-        log.info("task 7 cost {} ms",(t2-t1));
+        log.info("task 7 cost {} ms", (t2 - t1));
+    }
+
+
+    /**
+     * @param personFace
+     */
+    public void t8(String personFace) {
+        long t1 = System.currentTimeMillis();
+        NodeFilter personFilter = new NodeFilter();
+        personFilter.setLabels(List.of("Person"));
+        List<Node> nodes = CommonUtil.convertIterator2List(neo4jDb.nodes(personFilter), e -> AIService.similarity((String) e.property("face"), personFace) > IMAGE_SIMILAR, 1);
+        if (nodes == null || nodes.size() == 0) {
+            log.warn("task 8 not find person {}", personFace);
+            return;
+        }
+        Node person = nodes.get(0);
+        RelationshipFilter knowsFilter = new RelationshipFilter();
+        knowsFilter.setType("KNOWS");
+        List<PathTriple> friends = CommonUtil.convertIterator2List(neo4jDb.relationships(knowsFilter), e -> e.getStartNode().getId().equals(person.getId()));
+        friends.forEach(e -> {
+            log.info("person {} and person {} become friend in {}", person.getId(), e.getEndNode().getId(), e.getStoreRelationship().property("creationDate"));
+        });
+        long t2 = System.currentTimeMillis();
+        log.info("task 8 cost {} ms", (t2 - t1));
     }
 
 
@@ -254,7 +279,8 @@ public class SocialNetWorkTask {
 //        socialNetWorkTask.t4("1714",2);
 //        socialNetWorkTask.t5("/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", 2);
 //        socialNetWorkTask.t6("1709","/Users/along/Documents/dataset/FaceDataset/lfw/Hector_Grullon/Hector_Grullon_0001.jpg");
-        socialNetWorkTask.t7("/Users/along/Documents/dataset/FaceDataset/lfw/Islam_Karimov/Islam_Karimov_0001.jpg");
+//        socialNetWorkTask.t7("/Users/along/Documents/dataset/FaceDataset/lfw/Islam_Karimov/Islam_Karimov_0001.jpg");
+        socialNetWorkTask.t8("/Users/along/Documents/dataset/FaceDataset/lfw/Bruce_Van_De_Velde/Bruce_Van_De_Velde_0002.jpg");
     }
 
 
