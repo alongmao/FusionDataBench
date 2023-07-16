@@ -19,14 +19,24 @@ public class AIService {
 
 
     public static double similarity(String originImagePath, String targetImagePath) {
-        JSONObject result = JSONObject.parseObject(HttpRequest.sendGet(image_similarity_url, String.format("origin=%s&target=%s", originImagePath, targetImagePath)));
-        return Double.parseDouble(result.get("similarity").toString());
+        try {
+            JSONObject result = JSONObject.parseObject(HttpRequest.sendGet(image_similarity_url, String.format("origin=%s&target=%s", originImagePath, targetImagePath)));
+            return Double.parseDouble(result.get("similarity").toString());
+        } catch (Exception e) {
+            log.error("AIService invoke similarity error ", e);
+        }
+        return 0.0;
     }
 
     public static int classifySenti(String text) {
-        JSONObject param = new JSONObject();
-        param.put("text",text);
-        JSONObject result = JSONObject.parseObject(HttpRequest.sendPost(sentiment_predict_url, JSONObject.toJSONString(param)));
-        return Integer.parseInt(result.get("sentiment_type").toString());
+        try {
+            JSONObject param = new JSONObject();
+            param.put("text", text);
+            JSONObject result = JSONObject.parseObject(HttpRequest.sendPost(sentiment_predict_url, JSONObject.toJSONString(param)));
+            return Integer.parseInt(result.get("sentiment_type").toString());
+        } catch (Exception e) {
+            log.error("AIService invoke classifySenti error ", e);
+        }
+        return 1;
     }
 }
