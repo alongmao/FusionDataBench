@@ -3,6 +3,7 @@ package type;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * @Version 1.0
  */
 @Data
+@ToString
 public  class Node extends HasProperty{
 
     private Integer id;

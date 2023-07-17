@@ -63,10 +63,13 @@ public class Neo4jDB extends GraphDB {
     @Override
     public Iterator<Node> nodes(NodeFilter nodeFilter) {
         String filterStr = getNodeFilterStr(nodeFilter);
+        Map<String,NodeFilter> idMap = new HashMap<>();
+        idMap.put("n",nodeFilter);
+        String idFilterStr = getIdFilterStr(idMap);
         Session session = driver.session();
         Transaction tx = session.beginTransaction();
         /*先过滤结构化属性*/
-        Result rs = tx.run(String.format("match (n%s) return n", filterStr), nodeFilter.getProperties());
+        Result rs = tx.run(String.format("match (n%s) %s return n", filterStr,idFilterStr), nodeFilter.getProperties());
 //        List<String> intelPropertyKey = nodeFilter.getProperties().keySet().stream().filter(this::isIntelligentAttr).collect(Collectors.toList());
         return new Iterator<>() {
             //            boolean earlyStop = false;
@@ -84,7 +87,7 @@ public class Neo4jDB extends GraphDB {
             public Node next() {
                 long t1 = System.currentTimeMillis();
                 org.neo4j.driver.types.Node neo4jNode = rs.next().get("n").asNode();
-                logger.info("nodes(nodeFilter) get neo4j node cost " + (System.currentTimeMillis() - t1) + "ms");
+//                logger.info("nodes(nodeFilter) get neo4j node cost " + (System.currentTimeMillis() - t1) + "ms");
                 //TODO 统一非结构化属性过滤
 //                if (intelPropertyKey.contains("face") && neo4jNode.asMap().containsKey("face")) {
 //                    t1 = System.currentTimeMillis();
@@ -126,6 +129,10 @@ public class Neo4jDB extends GraphDB {
         String startNodeFilterStr = getNodeFilterStr(startNodeFilter);
         String endNodeFilterStr = getNodeFilterStr(endNodeFilter);
         String relFilterStr = getRelFilterStr(relationshipFilter);
+        Map<String,NodeFilter> idMap = new HashMap<>();
+        idMap.put("n",startNodeFilter);
+        idMap.put("m",endNodeFilter);
+        String idFilterStr = getIdFilterStr(idMap);
 
         Session session = driver.session();
         Transaction tx = session.beginTransaction();
@@ -142,7 +149,7 @@ public class Neo4jDB extends GraphDB {
         }
 
         String hop = from == to ? String.valueOf(from) : from + ".." + to;
-        Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) unwind(r) as rel with n,rel,m return n,rel,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr), param);
+        Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) %s unwind(r) as rel with n,rel,m return n,rel,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr,idFilterStr), param);
         return new Iterator<>() {
             @Override
             public boolean hasNext() {
@@ -166,13 +173,13 @@ public class Neo4jDB extends GraphDB {
     }
 
     @Override
-    public Iterator<Node> shortestPath(String startNodeInnerId, String endNodeInnerId, String relationshipType) {
+    public Iterator<Node> shortestPath(String startNodeInnerId, String endNodeInnerId, RelationshipFilter relationshipFilter) {
+        String relationFilterStr = getRelFilterStr(relationshipFilter);
         // 定义Cypher查询
-
         String cypherQuery = String.format("MATCH path=shortestPath((startNode)-[:%s*]-(endNode))\n" +
                 "WHERE id(startNode) = %s AND id(endNode) = %s\n" +
                 "UNWIND nodes(path) AS n\n" +
-                "RETURN n", relationshipType, startNodeInnerId, endNodeInnerId);
+                "RETURN n", relationFilterStr, startNodeInnerId, endNodeInnerId);
 
         // 运行查询
         Session session = driver.session();
@@ -307,7 +314,7 @@ public class Neo4jDB extends GraphDB {
     }
 
     /**
-     * 获取非结构化属性过滤的字符串
+     * 获取结构化属性过滤的字符串
      *
      * @param property
      * @return
@@ -326,5 +333,28 @@ public class Neo4jDB extends GraphDB {
             attr = "{" + attr + "}";
         }
         return attr;
+    }
+
+    private String getIdFilterStr(Map<String,NodeFilter> idFilterMap){
+        if(idFilterMap==null){
+            return "";
+        }
+        List<String> condition = new ArrayList<>();
+        for(String key:idFilterMap.keySet()){
+            if(idFilterMap.get(key)!=null&&idFilterMap.get(key).getId()!=null){
+                condition.add(String.format("id(%s)=%s",key,idFilterMap.get(key).getId()));
+            }
+        }
+        String str = "" ;
+        if(condition.size()!=0){
+            for(int i=0;i<condition.size();i++){
+                str+=condition.get(i);
+                if(i!=condition.size()-1){
+                    str+=" and ";
+                }
+            }
+            str = " where "+str;
+        }
+        return str;
     }
 }

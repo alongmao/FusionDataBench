@@ -1,5 +1,5 @@
 from flask import Flask, request
-from snownlp import SnowNLP
+from textblob import TextBlob
 import torch
 import torchvision.models as models
 import torchvision.transforms as transforms
@@ -11,15 +11,14 @@ resnet = models.resnet101(pretrained=True)
 resnet.eval()  # 设置模型为评估模式
 
 def analyze_sentiment(text):
-    s = SnowNLP(text)
-    sentiment_score = s.sentiments
-    if sentiment_score > 0.5:
-        sentiment = "2"
-    elif sentiment_score < 0.5:
-        sentiment = "0"
-    else:
-        sentiment = "1"
-    return sentiment,sentiment_score
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
+    sentiment_type = 1
+    if sentiment < 0:
+        sentiment_type = 0
+    elif sentiment > 0:
+        sentiment_type = 2
+    return sentiment_type,sentiment
 
 def extract_features(image_path):
     # 加载图像

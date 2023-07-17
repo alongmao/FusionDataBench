@@ -100,5 +100,5 @@ public abstract class GraphDB {
 
     public abstract List<Relationship> removeRelationshipsType(List<Integer> relationshipIds, String typeName);
 
-    public abstract Iterator<Node> shortestPath(String startNodeInnerId,String endNodeInnerId,String relationshipType);
+    public abstract Iterator<Node> shortestPath(String startNodeInnerId,String endNodeInnerId,RelationshipFilter relationshipFilter);
 }

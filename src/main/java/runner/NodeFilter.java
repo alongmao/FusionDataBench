@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 @Data
 public class NodeFilter {
 
+    private String id;
     private List<String> labels;
     private Map<String, Object> properties;
 
