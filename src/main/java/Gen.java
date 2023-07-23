@@ -41,7 +41,7 @@ public class Gen {
             DataSelectStrategy dataSelectStrategy = DataSelectStrategyFactory.create(DatasetEnum.FACE);
             BufferedReader reader = new BufferedReader(new FileReader(targetFile.getAbsolutePath()));
             String line;
-            PrintWriter out = new PrintWriter(personPath + "/part-new.csv");
+            PrintWriter out = new PrintWriter(personPath + "/part-new1.csv");
             while ((line = reader.readLine()) != null) {
                 String faceImagePath = ((Face) dataSelectStrategy.select()).getFacePath();
                 out.println(line + "|" + faceImagePath);
@@ -63,7 +63,7 @@ public class Gen {
             DataSelectStrategy dataSelectStrategy = DataSelectStrategyFactory.create(DatasetEnum.SENTIMENT_TEXT);
             BufferedReader reader = new BufferedReader(new FileReader(targetFile.getAbsolutePath()));
             String line;
-            PrintWriter out = new PrintWriter(commentPath + "/part-new.csv");
+            PrintWriter out = new PrintWriter(commentPath + "/part-new1.csv");
             while ((line = reader.readLine()) != null){
                 SentimentText sentimentText = dataSelectStrategy.select();
                 String[] fields = line.split("\\|");
