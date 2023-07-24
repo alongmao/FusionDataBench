@@ -48,6 +48,14 @@ public class DataSelectStrategyFactory {
                 }
                 break;
             }
+            case NEWS:{
+                if(null==factory.get(DatasetEnum.NEWS.getName())){
+                    synchronized (PostTextSelectStrategy.class){
+                        factory.put(DatasetEnum.NEWS.getName(), new PostTextSelectStrategy());
+                    }
+                }
+                break;
+            }
         }
         return factory.get(datasetEnum.getName());
     }

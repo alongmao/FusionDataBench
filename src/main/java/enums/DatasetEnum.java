@@ -14,7 +14,9 @@ public enum DatasetEnum {
 
     SENTIMENT_TEXT("情感文本数据"),
 
-    FACE("人脸数据");
+    FACE("人脸数据"),
+
+    NEWS("新闻主题数据");
 
     private String name;
 

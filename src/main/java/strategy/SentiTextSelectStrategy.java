@@ -17,7 +17,7 @@ public class SentiTextSelectStrategy implements DataSelectStrategy {
 
     Logger logger = Logger.getLogger(SentiTextSelectStrategy.class);
 
-    private  final String sentiTextFilePath = "/Users/along/Documents/dataset/TweetDataset/sentiment160.json";
+    private  final String sentiTextFilePath = "/Users/along/Documents/dataset/TweetDataset/eda_sentiment1440.csv";
 
     List<SentimentText> sentimentTextList;
 
@@ -30,7 +30,12 @@ public class SentiTextSelectStrategy implements DataSelectStrategy {
             BufferedReader reader = new BufferedReader(new FileReader(sentiTextFilePath));
             String line;
             while((line=reader.readLine())!=null){
-                SentimentText sentimentText = JSONObject.parseObject(line, SentimentText.class);
+                SentimentText sentimentText = new SentimentText();
+                int splitIndex = line.indexOf("\t");
+                String label = line.substring(0,splitIndex);
+                String content = line.substring(splitIndex+1);
+                sentimentText.setTarget(label);
+                sentimentText.setText(content);
                 this.sentimentTextList.add(sentimentText);
             }
             Collections.shuffle(this.sentimentTextList,new Random(42));
