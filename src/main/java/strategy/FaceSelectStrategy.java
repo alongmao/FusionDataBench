@@ -49,8 +49,7 @@ public class FaceSelectStrategy implements DataSelectStrategy {
                 faceEntity.setFacePath(face.getAbsolutePath().replace(FACE_DIR,""));
                 this.faceList.add(faceEntity);
             }catch (Exception e){
-                logger.info("list lfw image fail");
-                throw e;
+                logger.error("list lfw image fail",e);
             }
         });
     }
@@ -80,7 +79,7 @@ public class FaceSelectStrategy implements DataSelectStrategy {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("list imdb-wiki image fail",e);
         }
     }
 
