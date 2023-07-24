@@ -10,6 +10,6 @@ import lombok.Data;
  */
 @Data
 public class News {
-    private String classIndex;
+    private String topic;
     private String description;
 }

@@ -54,5 +54,4 @@ public class SentiTextSelectStrategy implements DataSelectStrategy {
         logger.info("select sentiment text fail");
         return null;
     }
-
 }

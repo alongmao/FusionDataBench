@@ -6,8 +6,7 @@
  */
 public class Tt {
     public static void main(String[] args) {
-        String a = "12345";
-        String b = "12";
-        System.out.println(a.replace(b,""));
+        String a = "part-1234-abc.csv";
+        System.out.println(a.matches("^part.*\\\\.csv$"));
     }
 }
