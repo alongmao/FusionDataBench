@@ -2,11 +2,10 @@ package strategy;
 
 import entity.Face;
 import org.apache.log4j.Logger;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,26 +15,26 @@ import java.util.stream.Collectors;
  * @Date: 2023/6/9 15:29
  * @Version 1.0
  */
-public class FaceSelectStrategy implements DataSelectStrategy {
+public class FaceSelectStrategy implements DataSelectStrategy, Serializable {
 
-    Logger logger = Logger.getLogger(FaceSelectStrategy.class);
+    transient Logger logger = Logger.getLogger(FaceSelectStrategy.class);
 //    人脸图片地址
     private final  String FACE_DIR = "/Users/along/Documents/dataset/FaceDataset";
 
     private final  String[] datasetName = {"lfw","imdb","wiki"};
 
-
     private List<Face> faceList;
 
     private Integer index;
 
+    private transient Iterator<Face> faceIt;
 
-    public FaceSelectStrategy() {
+
+    public FaceSelectStrategy(JavaSparkContext sc) {
         index = 0;
         this.faceList = new ArrayList<>();
 //        initLfw();
-        initImdbWiki();
-        Collections.shuffle(this.faceList,new Random(42));
+        initImdbWiki(sc);
     }
 
     private void initLfw(){
@@ -83,11 +82,42 @@ public class FaceSelectStrategy implements DataSelectStrategy {
         }
     }
 
+    private void initImdbWiki(JavaSparkContext sc){
+        JavaRDD<Face> imdbRdd = sc.textFile(String.format("%s/imdb.txt", FACE_DIR)).flatMap(line -> {
+            List<Face> faceList = new ArrayList<>();
+            String[] paths = line.split(",");
+            for (String path : paths) {
+                Face face = new Face();
+                face.setFacePath(String.format("/imdb_crop/%s", path.trim()));
+                faceList.add(face);
+            }
+            return faceList.iterator();
+        });
+
+
+
+        JavaRDD<Face> wikiRdd = sc.textFile(String.format("%s/wiki.txt", FACE_DIR)).flatMap(line -> {
+            List<Face> faceList = new ArrayList<>();
+            String[] paths = line.split(",");
+            for (String path : paths) {
+                Face face = new Face();
+                face.setFacePath(String.format("/wiki_crop/%s", path.trim()));
+                faceList.add(face);
+            }
+            return faceList.iterator();
+        });
+
+        long size = imdbRdd.count()+wikiRdd.count();
+
+        this.faceIt = imdbRdd.union(wikiRdd).toLocalIterator();
+    }
+
     @Override
     public Face select() {
-        if(index<this.faceList.size()){
-            return faceList.get(index++);
+        if(faceIt.hasNext()){
+            return faceIt.next();
         }
+        logger.info("select Fave Image fail");
         return null;
     }
 }

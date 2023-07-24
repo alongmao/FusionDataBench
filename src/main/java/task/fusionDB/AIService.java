@@ -13,9 +13,9 @@ import util.HttpRequest;
 @Slf4j
 public class AIService {
 
-    private final static String image_similarity_url = "http://10.0.82.144:5000/image/similarity";
+    private final static String image_similarity_url = "http://127.0.0.1:5000/image/similarity";
 
-    private final static String sentiment_predict_url = "http://10.0.82.144:5000/sentiment/predict";
+    private final static String sentiment_predict_url = "http://127.0.0.1:5000/sentiment/predict";
 
 
     public static double similarity(String originImagePath, String targetImagePath) {

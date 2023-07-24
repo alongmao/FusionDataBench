@@ -2,6 +2,8 @@ package entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Description: TODO
  * @Author: along
@@ -9,7 +11,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class News {
+public class News implements Serializable {
     private String topic;
     private String description;
 }

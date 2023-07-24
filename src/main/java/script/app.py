@@ -71,8 +71,10 @@ def sentiment_predict():
 
 @app.route('/image/similarity', methods=['GET'])
 def image_similarity():
-    origin = request.args.get('origin')
-    target = request.args.get('target')
+    image_dir = "/Users/along/Documents/dataset/FaceDataset"
+    origin = "{}{}".format(image_dir,request.args.get('origin'))
+    target = "{}{}".format(image_dir,request.args.get('target'))
+    
     
      # 提取图像特征
     features1 = extract_features(origin)

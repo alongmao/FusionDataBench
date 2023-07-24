@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 
 @Data
-public class SentimentText {
+public class SentimentText implements Serializable {
 
     private String target;
 

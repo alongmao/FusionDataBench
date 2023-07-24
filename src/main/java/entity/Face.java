@@ -3,6 +3,8 @@ package entity;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Description: TODO
  * @Author: along
@@ -11,6 +13,6 @@ import lombok.Data;
  */
 
 @Data
-public class Face {
+public class Face implements Serializable {
     private String facePath;
 }

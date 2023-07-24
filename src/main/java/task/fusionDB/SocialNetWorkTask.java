@@ -9,7 +9,6 @@ import type.PathTriple;
 import util.CommonUtil;
 
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,10 +37,25 @@ public class SocialNetWorkTask {
      */
     public void t1(String personId, String firstName, String facePath) {
         long t1 = System.currentTimeMillis();
-        NodeFilter nodeFilter = new NodeFilter();
-        nodeFilter.setLabels(List.of("Person"));
-        nodeFilter.setProperties(Map.of("firstName", firstName));
-        List<Node> nodes = CommonUtil.convertIterator2List(neo4jDb.nodes(nodeFilter), e -> e != null && AIService.similarity((String) e.property("face"), facePath) > IMAGE_SIMILAR);
+        NodeFilter startNodeFilter = new NodeFilter();
+        startNodeFilter.setLabels(List.of("Person"));
+        startNodeFilter.setId(personId);
+
+        NodeFilter endNodeFilter = new NodeFilter();
+        endNodeFilter.setLabels(List.of("Person"));
+        endNodeFilter.setProperties(Map.of("firstName", firstName));
+
+        RelationshipFilter relationshipFilter = new RelationshipFilter();
+        relationshipFilter.setType("KNOWS");
+        List<Node> friends = CommonUtil.convertIterator2List(neo4jDb.relationships(startNodeFilter, endNodeFilter, relationshipFilter,1,3), e -> AIService.similarity((String) e.getEndNode().property("face"), facePath) > IMAGE_SIMILAR, 1).stream().map(e -> e.getEndNode()).collect(Collectors.toList());
+        Node friend;
+        if(friends!=null&&friends.size()>0){
+            friend = friends.get(0);
+            log.info(friend.toString());
+        }else{
+            log.error("friend not found");
+        }
+        //TODO friend查询城市、学校、公司
         log.info("task 1 cost {} ms\n\n", (System.currentTimeMillis() - t1));
     }
 
@@ -90,7 +104,7 @@ public class SocialNetWorkTask {
                     return (int) (a - b);
                 })
                 .filter(e -> AIService.classifySenti((String) e.getEndNode().property("content")) == sentiment)
-                .map(e->e.getEndNode())
+                .map(e -> e.getEndNode())
                 .collect(Collectors.toList())
                 .subList(0, 10);
         comments.forEach(e -> log.info("friend id:{},firstName:{},lastName:{}. Message content:{},creationDate:{}",
@@ -201,17 +215,17 @@ public class SocialNetWorkTask {
             creatorFilter.setType("HAS_CREATOR");
             personFilter.setId(String.valueOf(f.getId()));
             Iterator<PathTriple> creatorPathTriple = neo4jDb.relationships(startNodeFilter, personFilter, creatorFilter);
-            List<Node> message = CommonUtil.convertIterator2List(creatorPathTriple, e -> e!=null)
+            List<Node> message = CommonUtil.convertIterator2List(creatorPathTriple, e -> e != null)
                     .stream()
-                    .sorted((e1,e2)->{
-                        long a = (long)e2.getEndNode().property("creationDate");
-                        long b = (long)e1.getEndNode().property("creationDate");
-                        return (int)(a-b);
+                    .sorted((e1, e2) -> {
+                        long a = (long) e2.getEndNode().property("creationDate");
+                        long b = (long) e1.getEndNode().property("creationDate");
+                        return (int) (a - b);
                     })
-                    .filter(e->AIService.classifySenti((String) e.getStartNode().property("content")) == sentiment)
-                    .map(e->e.getStartNode())
+                    .filter(e -> AIService.classifySenti((String) e.getStartNode().property("content")) == sentiment)
+                    .map(e -> e.getStartNode())
                     .collect(Collectors.toList())
-                    .subList(0,10);
+                    .subList(0, 10);
             log.info("friend id:{},firstName:{},lastName:{} has {} messages,sentiment {}", f.getId(), message.size(), sentiment);
         }
         long t2 = System.currentTimeMillis();
@@ -380,13 +394,13 @@ public class SocialNetWorkTask {
     public static void main(String[] args) {
         SocialNetWorkTask socialNetWorkTask = new SocialNetWorkTask();
         log.info("===========complex read===========");
-//        socialNetWorkTask.t1("Miguel", "/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg");
+        socialNetWorkTask.t1("1730827","Yang", "/imdb_crop/23/nm0000123_rm1519831296_1961-5-6_1979.jpg");
 //        socialNetWorkTask.t2("/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg", "/Users/along/Documents/dataset/FaceDataset/lfw/Queen_Elizabeth_II/Queen_Elizabeth_II_0009.jpg", 2);
 //        socialNetWorkTask.t3("1711", "/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", "6351");
 //        socialNetWorkTask.t4("1714", 2);
 //        socialNetWorkTask.t5("/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", 0);
-        socialNetWorkTask.t7("1709", "/Users/along/Documents/dataset/FaceDataset/lfw/Hector_Grullon/Hector_Grullon_0001.jpg");
-
+//        socialNetWorkTask.t7("1709", "/Users/along/Documents/dataset/FaceDataset/lfw/Hector_Grullon/Hector_Grullon_0001.jpg");
+//
 //        log.info("===========short read===========");
 //        socialNetWorkTask.t8("/Users/along/Documents/dataset/FaceDataset/lfw/Islam_Karimov/Islam_Karimov_0001.jpg");
 //        socialNetWorkTask.t9("/Users/along/Documents/dataset/FaceDataset/lfw/Bruce_Van_De_Velde/Bruce_Van_De_Velde_0002.jpg");

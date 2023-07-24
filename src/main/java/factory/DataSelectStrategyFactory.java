@@ -3,6 +3,7 @@ package factory;
 import java.util.HashMap;
 import java.util.Map;
 import enums.DatasetEnum;
+import org.apache.spark.api.java.JavaSparkContext;
 import strategy.*;
 
 /**
@@ -14,7 +15,7 @@ import strategy.*;
 public class DataSelectStrategyFactory {
     private static Map<String, DataSelectStrategy> factory = new HashMap<>();
 
-    public static DataSelectStrategy create(DatasetEnum datasetEnum){
+    public static DataSelectStrategy create(DatasetEnum datasetEnum, JavaSparkContext sc){
         switch (datasetEnum){
             case PRODUCT:{
                     if(null==factory.get(DatasetEnum.PRODUCT.getName())){
@@ -35,7 +36,7 @@ public class DataSelectStrategyFactory {
             case SENTIMENT_TEXT:{
                 if(null == factory.get(DatasetEnum.SENTIMENT_TEXT.getName())){
                     synchronized (SentiTextSelectStrategy.class){
-                        factory.put(DatasetEnum.SENTIMENT_TEXT.getName(), new SentiTextSelectStrategy());
+                        factory.put(DatasetEnum.SENTIMENT_TEXT.getName(), new SentiTextSelectStrategy(sc));
                     }
                 }
                 break;
@@ -43,7 +44,7 @@ public class DataSelectStrategyFactory {
             case FACE:{
                 if(null==factory.get(DatasetEnum.FACE.getName())){
                     synchronized (FaceSelectStrategy.class){
-                        factory.put(DatasetEnum.FACE.getName(), new FaceSelectStrategy());
+                        factory.put(DatasetEnum.FACE.getName(), new FaceSelectStrategy(sc));
                     }
                 }
                 break;
@@ -51,7 +52,7 @@ public class DataSelectStrategyFactory {
             case NEWS:{
                 if(null==factory.get(DatasetEnum.NEWS.getName())){
                     synchronized (PostTextSelectStrategy.class){
-                        factory.put(DatasetEnum.NEWS.getName(), new PostTextSelectStrategy());
+                        factory.put(DatasetEnum.NEWS.getName(), new PostTextSelectStrategy(sc));
                     }
                 }
                 break;

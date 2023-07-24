@@ -149,6 +149,7 @@ public class Neo4jDB extends GraphDB {
         }
 
         String hop = from == to ? String.valueOf(from) : from + ".." + to;
+        String format = String.format("match (n%s)-[r:%s*%s]->(m%s) %s unwind(r) as rel with n,rel,m return n,rel,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr, idFilterStr);
         Result rs = tx.run(String.format("match (n%s)-[r:%s*%s]->(m%s) %s unwind(r) as rel with n,rel,m return n,rel,m", startNodeFilterStr, relFilterStr, hop, endNodeFilterStr,idFilterStr), param);
         return new Iterator<>() {
             @Override
