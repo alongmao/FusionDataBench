@@ -29,18 +29,22 @@ import step：
        --format-options header=false,quoteAll=true
    ```
 
-2. download imdm-wiki,lfw face dataset, tweet sentiment public dataset, News dataset[TODO]
+2. download imdm-wiki,lfw face dataset, tweet sentiment public dataset, News dataset.
 
-3. download our ldbc_snb_interactive_impls. it's header and script have been customized.
+   > all dataset have been uploaded to server(/data/along/dataset)
 
-4. run Gen.java in this project to generator unstructured data
+3. Enable the AI service and replace  the path of image_dir with  your `Facetdataset path`
 
-5. export some environment variable[TODO].
+4. download our ldbc_snb_interactive_impls. it's header and script have been customized.
+
+5. run Gen.java in this project to generator unstructured data
+
+6. export some environment variable.
 
    ```
    export NEO4J_CSV_DIR=${LDBC_SNB_DATAGEN_DIR}/out-sf${SF}/graphs/csv/bi/composite-projected-fk/
    ```
 
-6. run load-in-one-step.sh
+7. run load-in-one-step.sh
 
-7. run SocialNetwork.java
+8. run SocialNetwork.java
