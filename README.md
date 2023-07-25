@@ -43,8 +43,28 @@ import step：
 
    ```
    export NEO4J_CSV_DIR=${LDBC_SNB_DATAGEN_DIR}/out-sf${SF}/graphs/csv/bi/composite-projected-fk/
+   
+   # parent directory(Face,comment,post)  of 3 multimodal datasets 
+   export MULTIMODAL_DATASET_DIR=/home/along/dataset 
    ```
 
 7. run load-in-one-step.sh
 
 8. run SocialNetwork.java
+
+
+
+```
+tools/run.py \
+    --cores 4 \
+    --memory 16G \
+    -- \
+    --mode bi \
+    --format csv \
+    --scale-factor ${SF} \
+    --output-dir out-sf${SF}/ \
+    --explode-edges \
+    --epoch-millis \
+    --format-options header=false,quoteAll=true
+```
+

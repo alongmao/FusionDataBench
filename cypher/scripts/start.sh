@@ -15,8 +15,8 @@ fi
 
 docker run --rm \
     --user="$(id -u):$(id -g)" \
-    --publish=7474:7474 \
-    --publish=7687:7687 \
+    --publish=9474:7474 \
+    --publish=9687:7687 \
     --detach \
     --ulimit nofile=40000:40000 \
     ${NEO4J_ENV_VARS} \

@@ -21,7 +21,7 @@ public class Gen {
 
     transient Logger logger = Logger.getLogger(Gen.class);
 
-    private final String ldbcDataPath = "/Users/along/github/ldbc_snb_datagen_spark/out-sf1/graphs/csv/bi/composite-projected-fk";
+    private final String ldbcDataPath = System.getenv("NEO4J_CSV_DIR") ;
 
     private final String personPath = ldbcDataPath + "/initial_snapshot/dynamic/Person";
 
@@ -29,7 +29,7 @@ public class Gen {
 
     private final String postPath = ldbcDataPath + "/initial_snapshot/dynamic/Post";
 
-    private final String postHasTopicPath = ldbcDataPath + "/initial_snapshot/dynamic/Post_HasTopic_Topic";
+    private final String postHasTopicPath = ldbcDataPath + "/initial_snapshot/dynamic/Post_hasTopic_Topic";
 
     private final String topicPath = ldbcDataPath + "/initial_snapshot/static/Topic";
 

@@ -16,11 +16,13 @@ import java.util.*;
  * @Date: 2023/6/9 15:28
  * @Version 1.0
  */
-public class SentiTextSelectStrategy implements DataSelectStrategy, Serializable{
+public class SentiTextSelectStrategy implements DataSelectStrategy, Serializable {
 
     transient Logger logger = Logger.getLogger(SentiTextSelectStrategy.class);
 
-    private  final String sentiTextFilePath = "/Users/along/Documents/dataset/TweetDataset/eda_sentiment1440.csv";
+    private final String datasetDir = System.getenv("MULTIMODAL_DATASET_DIR");
+
+    private final String sentiTextFilePath = datasetDir + "/TweetDataset/eda_sentiment1440.csv";
 
     List<SentimentText> sentimentTextList;
 
@@ -44,7 +46,7 @@ public class SentiTextSelectStrategy implements DataSelectStrategy, Serializable
 
     @Override
     public SentimentText select() {
-        if(sentimentTextIt.hasNext()){
+        if (sentimentTextIt.hasNext()) {
             return sentimentTextIt.next();
         }
         logger.info("select sentiment text fail");

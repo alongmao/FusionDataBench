@@ -17,14 +17,16 @@ import java.util.*;
 public class PostTextSelectStrategy implements DataSelectStrategy, Serializable {
     transient Logger logger = Logger.getLogger(PostTextSelectStrategy.class);
 
-    private final String dir = "/Users/along/Documents/dataset/News\\ category\\ dataset";
+    private final String datasetDir = System.getenv("MULTIMODAL_DATASET_DIR");
+
+    private final String postDir = datasetDir + "/News\\ category\\ dataset";
 
     private final String filename = "eda_data560.txt";
 
     private Integer index;
     List<News> newsList;
 
-    private  Iterator<News> newsIterator;
+    private Iterator<News> newsIterator;
 
     public PostTextSelectStrategy(JavaSparkContext sc) {
 //        index = 0;
@@ -49,7 +51,7 @@ public class PostTextSelectStrategy implements DataSelectStrategy, Serializable 
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        JavaRDD<News> javaRDD = sc.textFile(String.format("%s/%s", dir, filename)).map(line -> {
+        JavaRDD<News> javaRDD = sc.textFile(String.format("%s/%s", postDir, filename)).map(line -> {
             int splitIndex = line.indexOf("\t");
             String label = line.substring(0, splitIndex);
             String content = line.substring(splitIndex + 1);
@@ -63,7 +65,7 @@ public class PostTextSelectStrategy implements DataSelectStrategy, Serializable 
 
     @Override
     public News select() {
-        if(this.newsIterator.hasNext()){
+        if (this.newsIterator.hasNext()) {
             return this.newsIterator.next();
         }
         logger.info("select Post text fail");
