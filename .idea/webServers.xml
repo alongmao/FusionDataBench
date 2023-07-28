@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7ede4b40-da5c-4663-a039-5bc64ea1fbc1" name="panda144">
+        <fileTransfer rootFolder="/home/along" accessType="SFTP" host="10.0.82.144" port="22" sshConfigId="77b102cd-b0d3-4e42-b64c-3781f6c2ac7f" sshConfig="along@10.0.82.144:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

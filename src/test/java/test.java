@@ -1,7 +1,10 @@
+import task.fusionDB.AIService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -73,6 +76,15 @@ public class test {
             out.write(String.format("%s\t%s\n",lines[0],hashMap.get(lines[1])));
         }
         out.close();
+    }
+
+    public static void testTopicExtract(){
+        AIService.extractTopic(List.of(
+                "Over 4 Million Americans Roll Up Sleeves For Omicron-Targeted COVID Boosters Health experts said it is too early to predict whether demand would match up with the 171 million doses of the new boosters the U.S. ordered for the fall.",
+                "American Airlines Flyer Charged, Banned For Life After Punching Flight Attendant On Video He was subdued by passengers and crew when he fled to the back of the aircraft after the confrontation, according to the U.S. attorney's office in Los Angeles.",
+                "23 Of The Funniest Tweets About Cats And Dogs This Week (Sept. 17-23) Until you have a dog you don't understand what could be eaten."
+        )).forEach(System.out::println);
+        System.out.println(AIService.classifySenti("I am so happy"));
     }
 
 }
