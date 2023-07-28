@@ -50,7 +50,7 @@ public class AIService {
     public static List<Integer> extractTopic(List<String> textList){
         try{
             JSONObject param = new JSONObject();
-            param.put("text",textList);
+            param.put("texts",textList);
             JSONObject response = JSONObject.parseObject(HttpRequest.sendPost(topic_extract_url, JSONObject.toJSONString(param)));
 
             List<Integer> topicList = new ArrayList<>();
