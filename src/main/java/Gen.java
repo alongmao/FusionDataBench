@@ -117,7 +117,7 @@ public class Gen {
 
     private void mergePost(JavaSparkContext sc) throws Exception {
         List<File> targetFileList = getTargetFile(postPath);
-        if (null != targetFileList && targetFileList.size() > 0) {
+        if (targetFileList.size() > 0) {
             DataSelectStrategy dataSelectStrategy = DataSelectStrategyFactory.create(DatasetEnum.NEWS, sc);
             Map<String, String> postHasTopicMap = new HashMap<>();
             targetFileList.forEach(targetFile -> {
@@ -139,7 +139,7 @@ public class Gen {
                         postHasTopicMap.put(originPostId, news.getTopic());
                     }
                 } catch (Exception e) {
-                    logger.error("process image file error", e);
+                    logger.error("process post file error", e);
                 }
             });
             createTopic();
@@ -281,6 +281,9 @@ public class Gen {
 
     public static void main(String[] args) {
         Gen main = new Gen();
+        long t1 = System.currentTimeMillis();
         main.merge();
+        long t2 = System.currentTimeMillis();
+        System.out.println("Gen costs "+(t2-t1)+"ms");
     }
 }

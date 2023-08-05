@@ -392,9 +392,9 @@ public class SocialNetWorkTask {
 
 
     public static void main(String[] args) {
-        SocialNetWorkTask socialNetWorkTask = new SocialNetWorkTask();
+//        SocialNetWorkTask socialNetWorkTask = new SocialNetWorkTask();
         log.info("===========complex read===========");
-        socialNetWorkTask.t1("1730827","Yang", "/imdb_crop/23/nm0000123_rm1519831296_1961-5-6_1979.jpg");
+//        socialNetWorkTask.t1("1730827","Yang", "/imdb_crop/23/nm0000123_rm1519831296_1961-5-6_1979.jpg");
 //        socialNetWorkTask.t2("/Users/along/Documents/dataset/FaceDataset/lfw/Michael_Bouchard/Michael_Bouchard_0001.jpg", "/Users/along/Documents/dataset/FaceDataset/lfw/Queen_Elizabeth_II/Queen_Elizabeth_II_0009.jpg", 2);
 //        socialNetWorkTask.t3("1711", "/Users/along/Documents/dataset/FaceDataset/lfw/Margaret_Okayo/Margaret_Okayo_0001.jpg", "6351");
 //        socialNetWorkTask.t4("1714", 2);
@@ -406,6 +406,11 @@ public class SocialNetWorkTask {
 //        socialNetWorkTask.t9("/Users/along/Documents/dataset/FaceDataset/lfw/Bruce_Van_De_Velde/Bruce_Van_De_Velde_0002.jpg");
 //        socialNetWorkTask.t10("241");
 //        socialNetWorkTask.t11("1709");
+        long t1 = System.currentTimeMillis();
+        for(int i=0;i<100;i++){
+            AIService.similarity("/imdb_crop/02/nm0000002_rm2619382528_1924-9-16_2006.jpg","/imdb_crop/02/nm0000002_rm2619382528_1924-9-16_2006.jpg");
+        }
+        System.out.println((System.currentTimeMillis()-t1));
     }
 
 

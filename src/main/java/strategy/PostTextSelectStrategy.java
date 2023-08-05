@@ -60,6 +60,7 @@ public class PostTextSelectStrategy implements DataSelectStrategy, Serializable 
             news.setDescription(content);
             return news;
         });
+        System.out.println("post length:"+javaRDD.count());
         this.newsIterator = javaRDD.toLocalIterator();
     }
 
