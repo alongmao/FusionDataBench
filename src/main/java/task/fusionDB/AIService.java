@@ -40,11 +40,13 @@ public class AIService {
             JSONObject param = new JSONObject();
             param.put("text", text);
             JSONObject result = JSONObject.parseObject(HttpRequest.sendPost(sentiment_predict_url, JSONObject.toJSONString(param)));
+//            System.out.println(result.toString());
             return Integer.parseInt(result.get("sentiment_type").toString());
         } catch (Exception e) {
             log.error("AIService invoke classifySenti error ", e);
+            System.out.println(e.toString());
         }
-        return 1;
+        return -1;
     }
 
     public static List<Integer> extractTopic(List<String> textList){

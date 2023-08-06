@@ -1,0 +1,5 @@
+
+*.crc
+data/
+target/
+*.class
