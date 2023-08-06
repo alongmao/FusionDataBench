@@ -17,7 +17,7 @@ def analyze_sentiment(text):
     if sentiment < 0:
         sentiment_type = 0
     elif sentiment > 0:
-        sentiment_type = 2
+        sentiment_type = 4
     return sentiment_type,sentiment
 
 def extract_features(image_path):
@@ -74,8 +74,8 @@ def image_similarity():
     image_dir = "/Users/along/Documents/dataset/FaceDataset"
     origin = "{}{}".format(image_dir,request.args.get('origin'))
     target = "{}{}".format(image_dir,request.args.get('target'))
-    
-    
+
+
      # 提取图像特征
     features1 = extract_features(origin)
     features2 = extract_features(target)
